@@ -19,7 +19,7 @@ using namespace std;
         OPT(i, j) = max(OPT(i-1, j), OPT(i, j-1))
  */
 
-long long computeWeightedLCSValue(const string& A, const string& B, unordered_map<char, int>& values) {
+vector<vector<long long>> computeWeightedLCSValue(const string& A, const string& B, unordered_map<char, int>& values) {
     int n = A.length();
     int m = B.length();
 
@@ -47,7 +47,30 @@ long long computeWeightedLCSValue(const string& A, const string& B, unordered_ma
         }
     }
 
-    return dp[n][m];
+    return dp;
+}
+
+string backtrackLCS(const string& A, const string& B, const vector<vector<long long>>& dp) {
+    string result = "";
+    int i = A.length();
+    int j = B.length();
+
+    // start from bottom-right and go towards top-left
+    while (i > 0 && j > 0) {
+        if (A[i - 1] == B[j - 1]) {
+            result += A[i - 1];
+            i--;
+            j--;
+        }
+        else if (dp[i - 1][j] >= dp[i][j - 1]) {
+            i--;
+        } else {
+            j--;
+        }
+    }
+
+    reverse(result.begin(), result.end());
+    return result;
 }
 
 int main(int argc, char* argv[]) {
@@ -76,9 +99,14 @@ int main(int argc, char* argv[]) {
 
     string A, B;
     if (!(inputFile >> A >> B)) return 0;
-    long long maxValue = computeWeightedLCSValue(A, B, values);
+
+    auto dpTable = computeWeightedLCSValue(A, B, values);
+
+    long long maxValue = dpTable[A.length()][B.length()];
+    string lcsString = backtrackLCS(A, B, dpTable);
 
     cout << maxValue << endl;
+    cout << lcsString << endl;
 
     return 0;
 }
