@@ -1,9 +1,11 @@
+#include <algorithm>
+#include <bits/stdc++.h>
+#include <cstring>
+#include <fstream>
 #include <iostream>
-#include <vector>
 #include <string>
 #include <unordered_map>
-#include <algorithm>
-#include <fstream>
+#include <vector>
 
 using namespace std;
 
@@ -13,13 +15,14 @@ using namespace std;
  2. Define helper functions:
     v(char c): Returns integer value assigned to char c (handled by values.at(c))
  3. Recursive function for OPT:
-    If A[i] == B[j]:  
+    If A[i] == B[j]:
         OPT(i, j) = OPT(i-1, j-1) + v(A[i])
     Else:
         OPT(i, j) = max(OPT(i-1, j), OPT(i, j-1))
  */
 
-vector<vector<long long>> computeWeightedLCSValue(const string& A, const string& B, unordered_map<char, int>& values) {
+vector<vector<long long>> computeWeightedLCSValue(const string &A, const string &B,
+                                                  unordered_map<char, int> &values) {
     int n = A.length();
     int m = B.length();
 
@@ -37,12 +40,12 @@ vector<vector<long long>> computeWeightedLCSValue(const string& A, const string&
             if (A[i - 1] == B[j - 1]) {
                 // Char match: diagonal + value
                 char matchingChar = A[i - 1];
-                int charVal = values.at(matchingChar); 
+                int charVal = values.at(matchingChar);
                 dp[i][j] = dp[i - 1][j - 1] + charVal;
             } else {
 
                 // No match: take max of excluding one character from A or B
-                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]); 
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
             }
         }
     }
@@ -50,7 +53,7 @@ vector<vector<long long>> computeWeightedLCSValue(const string& A, const string&
     return dp;
 }
 
-string backtrackLCS(const string& A, const string& B, const vector<vector<long long>>& dp) {
+string backtrackLCS(const string &A, const string &B, const vector<vector<long long>> &dp) {
     string result = "";
     int i = A.length();
     int j = B.length();
@@ -61,8 +64,7 @@ string backtrackLCS(const string& A, const string& B, const vector<vector<long l
             result += A[i - 1];
             i--;
             j--;
-        }
-        else if (dp[i - 1][j] >= dp[i][j - 1]) {
+        } else if (dp[i - 1][j] >= dp[i][j - 1]) {
             i--;
         } else {
             j--;
@@ -73,9 +75,9 @@ string backtrackLCS(const string& A, const string& B, const vector<vector<long l
     return result;
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     if (argc < 2) {
-        cerr << "Usage: " << argv[0] << " <input_file_path>" << endl;
+        cerr << "Usage: " << argv[0] << " <input_file_path> [time]" << endl;
         return 1;
     }
 
@@ -85,12 +87,18 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    bool time = false;
+    if (argc == 3 && strcmp(argv[2], "time") == 0) {
+        time = true;
+    }
+
     int K;
-    if (!(inputFile >> K)) return 0;
+    if (!(inputFile >> K))
+        return 0;
 
     unordered_map<char, int> values;
     for (int i = 0; i < K; ++i) {
-        //c = character, v = corresponding value
+        // c = character, v = corresponding value
         char c;
         int v;
         inputFile >> c >> v;
@@ -98,12 +106,32 @@ int main(int argc, char* argv[]) {
     }
 
     string A, B;
-    if (!(inputFile >> A >> B)) return 0;
+    if (!(inputFile >> A >> B))
+        return 0;
 
-    auto dpTable = computeWeightedLCSValue(A, B, values);
+    long long maxValue;
+    string lcsString;
+    if (time) {
+        long long sum = 0;
 
-    long long maxValue = dpTable[A.length()][B.length()];
-    string lcsString = backtrackLCS(A, B, dpTable);
+        for (int i = 0; i < 10; i++) {
+            auto start = chrono::high_resolution_clock::now();
+
+            auto dpTable = computeWeightedLCSValue(A, B, values);
+            maxValue = dpTable[A.length()][B.length()];
+            lcsString = backtrackLCS(A, B, dpTable);
+
+            auto stop = chrono::high_resolution_clock::now();
+            auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+            sum += duration.count();
+        }
+
+        cout << sum / 10 << "\n";
+    } else {
+        auto dpTable = computeWeightedLCSValue(A, B, values);
+        maxValue = dpTable[A.length()][B.length()];
+        lcsString = backtrackLCS(A, B, dpTable);
+    }
 
     cout << maxValue << endl;
     cout << lcsString << endl;
