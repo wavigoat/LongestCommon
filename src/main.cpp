@@ -126,7 +126,7 @@ int main(int argc, char *argv[]) {
             sum += duration.count();
         }
 
-        cout << sum / 10 << "\n";
+        cout << sum / 10 << " microseconds\n";
     } else {
         auto dpTable = computeWeightedLCSValue(A, B, values);
         maxValue = dpTable[A.length()][B.length()];
