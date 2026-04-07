@@ -1,4 +1,4 @@
-# GreedyAlgos
+# HVLCS
 
 Name: Kaitlyn Tran  
 UFID: 79518935  
@@ -41,14 +41,17 @@ Input strings should only contain characters defined in the initial K alphabet l
 OPT(i, j) =
 - **0**, if i = 0 or j = 0
 - **v(a_i) + OPT(i-1, j-1)**, if a\_i = b\_i
-- **max(OPT(i-1, j), OPT(i, j-1))** otherwise
+- **max(OPT(i-1, j), OPT(i, j-1))**, otherwise
 
-With either i = 0 or j = 0, we have the base case where no subsequence can exist (one or both of the strings is empty), so the highest value must therefore be 0.  
+With either i = 0 or j = 0, we have the base case where no subsequence can exist between the two strings (one or both of the prefixes is empty), so the highest value must therefore be 0.  
 
-If the two characters we are considering are equal, 
+If the two characters in consideration are equal, then we have found part of a common subsequence, and thus the value of OPT(i, j) will be the value of this character, plus the value of the of the two prefixes up to this character.  
+
+Otherwise (i.e., when the two characters in consideration are not equal), including either a\_i or b\_i had no effect on the value of the subsequence. Thus, we simply take the larger of the OPT(i-1, j) and OPT(i, j-1), as these two cases are both subsets of the current case, OPT(i, j).  
+
 
 ### 3. Big-Oh
-Here `A[1]` means "the first character in string A"
+Here `A[1]` means "the first character in string A".
 
 ```
 Input: strings A, B
